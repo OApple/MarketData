@@ -3,6 +3,7 @@
 #define MDSPI_H
 #include <string>
 #include <unordered_map>
+#include <boost/filesystem.hpp>
 #include <ThostFtdcMdApi.h>
 #include "dataprocessor.h"
 #include "instrument.h"
@@ -57,6 +58,7 @@ private:
     int instrument_start;
     vector<Instrument*>vinstrument;
     unordered_map<string,int> instrument_map;
+    unordered_map<string,boost::filesystem::fstream*>  file_map;
     string _market_front_addr="0";
     CThostFtdcMdApi* pUserApi ;
     DataInitInstance &dii;

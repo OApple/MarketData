@@ -105,6 +105,8 @@ void CTraderSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,CThos
 
         date tradingday=from_undelimited_string(string(pRspUserLogin->TradingDay));
         dii.tradeday=to_iso_extended_string(tradingday);
+       dii.tradeday.erase(dii.tradeday.begin(),dii.tradeday.begin()+2);
+//       cout<<dii.tradeday<<endl;
         vmd=new CMdSpi(dii);
 //        char tradingDay[12] = {"\0"};
 //        strcpy(tradingDay,_pUserApi->GetTradingDay());

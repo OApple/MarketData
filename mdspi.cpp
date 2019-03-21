@@ -401,7 +401,7 @@ void CMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketDa
     }
     else
     {
-        douChangeRate = (pDepthMarketData->LastPrice-pDepthMarketData->PreSettlementPrice)/pDepthMarketData->PreSettlementPrice;
+        douChangeRate = (pDepthMarketData->LastPrice-pDepthMarketData->PreSettlementPrice)/pDepthMarketData->PreSettlementPrice*100;
     }
     tout.precision(4);
     tout.seekp(0);
@@ -461,7 +461,8 @@ void CMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketDa
     json.append("\"QPrePositionQty\":\"" +lexical_cast<string>(pDepthMarketData->PreOpenInterest) + "\"}");
     json.append("}\r\n");
 //        LOG(ERROR)<<datastr<<json;
-    boost::filesystem::path file_path("./data/"+strExchangeID+"/"+strCommodityNo+"/"+dii.tradeday);   //初始化
+    string fst="./data/"+strExchangeID+"/"+strCommodityNo+"/"+dii.tradeday;
+    boost::filesystem::path file_path(fst);   //初始化
 //    LOG(ERROR)<<("./data/"+strExchangeID+"/"+strCommodityNo+"/"+to_iso_extended_string(tradeday));
     if (!boost::filesystem::exists(file_path))
     {
@@ -469,10 +470,22 @@ void CMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketDa
     }
     else
     {
-        boost::filesystem::fstream fstream(file_path/(newInstrumentIDstr+".dat"), std::ios_base::app);
-        //write data to file
-        fstream << json;
-        fstream.close();
+        string of=fst+"/"+newInstrumentIDstr+".dat";
+        boost::filesystem::fstream *fp=   file_map[of];
+        if(fp!=nullptr)
+        {
+            *fp << json;
+        }
+        else
+        {
+            boost::filesystem::fstream *pfstream=new boost::filesystem::fstream(file_path/(newInstrumentIDstr+".dat"), std::ios_base::app);
+            *pfstream << json;
+            file_map[of]=pfstream;
+        }
+        //        boost::filesystem::fstream fstream(file_path/(newInstrumentIDstr+".dat"), std::ios_base::app);
+        //        //write data to file
+        //        fstream << json;
+        //        fstream.close();
     }
 
 
